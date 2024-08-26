@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { sidebarLinks } from '@/constants'
-import { cn } from '@/libs/utils'
+import { cn } from '@/lib/utils'
 
 export default function Sidebar() {
 	const pathname = usePathname()
