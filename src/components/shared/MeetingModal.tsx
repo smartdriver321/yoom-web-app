@@ -8,29 +8,29 @@ import { Button } from '../ui/button'
 import { Dialog, DialogContent } from '../ui/dialog'
 
 interface MeetingModalProps {
+	children?: ReactNode
 	className?: string
 	buttonClassName?: string
-	children?: ReactNode
 	isOpen: boolean
 	onClose: () => void
 	title: string
-	handleClick?: () => void
-	buttonText?: string
-	instantMeeting?: boolean
 	image?: string
 	buttonIcon?: string
+	buttonText?: string
+	instantMeeting?: boolean
+	handleClick?: () => void
 }
 
 export default function MeetingModal({
+	children,
+	className,
 	isOpen,
 	onClose,
 	title,
-	className,
-	children,
-	handleClick,
-	buttonText,
 	image,
 	buttonIcon,
+	buttonText,
+	handleClick,
 }: MeetingModalProps) {
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
