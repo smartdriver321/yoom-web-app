@@ -8,6 +8,8 @@ import { StreamCall, StreamTheme } from '@stream-io/video-react-sdk'
 
 import { useGetCallById } from '@/lib/hooks/useGetCallById'
 import Alert from '@/components/shared/Alert'
+import MeetingSetup from '@/components/shared/MeetingSetup'
+import MeetingRoom from '@/components/shared/MeetingRoom'
 
 export default function Meeting() {
 	const [isSetupComplete, setIsSetupComplete] = useState(false)
@@ -36,7 +38,13 @@ export default function Meeting() {
 	return (
 		<main className='h-screen w-full'>
 			<StreamCall call={call}>
-				<StreamTheme></StreamTheme>
+				<StreamTheme>
+					{!isSetupComplete ? (
+						<MeetingSetup setIsSetupComplete={setIsSetupComplete} />
+					) : (
+						<MeetingRoom />
+					)}
+				</StreamTheme>
 			</StreamCall>
 		</main>
 	)
