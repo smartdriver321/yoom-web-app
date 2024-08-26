@@ -1,3 +1,5 @@
+import MeetingTypeList from '@/components/shared/MeetingTypeList'
+
 export default function Home() {
 	const now = new Date()
 
@@ -22,6 +24,7 @@ export default function Home() {
 					</div>
 				</div>
 			</div>
+			<MeetingTypeList />
 		</section>
 	)
 }

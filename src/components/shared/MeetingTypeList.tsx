@@ -3,8 +3,12 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk'
 
 import HomeCard from './HomeCard'
+import MeetingModal from './MeetingModal'
+import { useUser } from '@clerk/nextjs'
+import { toast } from '../ui/use-toast'
 
 const initialValues = {
 	dateTime: new Date(),
@@ -16,8 +20,53 @@ export default function MeetingTypeList() {
 	const [meetingState, setMeetingState] = useState<
 		'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | undefined
 	>(undefined)
+	const [values, setValues] = useState(initialValues)
+	const [callDetail, setCallDetail] = useState<Call>()
 
 	const router = useRouter()
+	const { user } = useUser()
+	const client = useStreamVideoClient()
+
+	const createMeeting = async () => {
+		if (!client || !user) return
+
+		try {
+			if (!values.dateTime) {
+				toast({ title: 'Please select a date and time' })
+				return
+			}
+			const id = crypto.randomUUID()
+			const call = client.call('default', id)
+
+			if (!call) throw new Error('Failed to create meeting')
+
+			const startsAt =
+				values.dateTime.toISOString() || new Date(Date.now()).toISOString()
+			const description = values.description || 'Instant Meeting'
+
+			await call.getOrCreate({
+				data: {
+					starts_at: startsAt,
+					custom: {
+						description,
+					},
+				},
+			})
+
+			setCallDetail(call)
+
+			if (!values.description) {
+				router.push(`/meeting/${call.id}`)
+			}
+
+			toast({
+				title: 'Meeting Created',
+			})
+		} catch (error) {
+			console.error(error)
+			toast({ title: 'Failed to create Meeting' })
+		}
+	}
 
 	return (
 		<section className='grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4'>
@@ -47,6 +96,15 @@ export default function MeetingTypeList() {
 				description='Meeting Recordings'
 				className='bg-yellow-1'
 				handleClick={() => router.push('/recordings')}
+			/>
+
+			<MeetingModal
+				isOpen={meetingState === 'isInstantMeeting'}
+				onClose={() => setMeetingState(undefined)}
+				title='Start an Instant Meeting'
+				className='text-center'
+				buttonText='Start Meeting'
+				handleClick={createMeeting}
 			/>
 		</section>
 	)
